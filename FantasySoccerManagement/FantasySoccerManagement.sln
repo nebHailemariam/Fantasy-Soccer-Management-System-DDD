@@ -7,6 +7,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{5A8CC574-EED
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasySoccerManagement.Core", "src\FantasySoccerManagement.Core\FantasySoccerManagement.Core.csproj", "{9F797F50-8517-470B-BCEF-85721D740620}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FantasySoccerManagement.Infrastructure", "src\FantasySoccerManagement.Infrastructure\FantasySoccerManagement.Infrastructure.csproj", "{139B886C-E596-4D4B-AA04-96C3875C6F17}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +22,13 @@ Global
 		{9F797F50-8517-470B-BCEF-85721D740620}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9F797F50-8517-470B-BCEF-85721D740620}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9F797F50-8517-470B-BCEF-85721D740620}.Release|Any CPU.Build.0 = Release|Any CPU
+		{139B886C-E596-4D4B-AA04-96C3875C6F17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{139B886C-E596-4D4B-AA04-96C3875C6F17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{139B886C-E596-4D4B-AA04-96C3875C6F17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{139B886C-E596-4D4B-AA04-96C3875C6F17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9F797F50-8517-470B-BCEF-85721D740620} = {5A8CC574-EED4-49F8-B232-E55E0E8F3BE5}
+		{139B886C-E596-4D4B-AA04-96C3875C6F17} = {5A8CC574-EED4-49F8-B232-E55E0E8F3BE5}
 	EndGlobalSection
 EndGlobal
