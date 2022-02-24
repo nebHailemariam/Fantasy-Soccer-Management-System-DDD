@@ -4,9 +4,9 @@ using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 
 namespace FantasySoccerManagement.Core.Aggregate
 {
-    public class Managers : BaseEntity<Guid>, IAggregateRoot
+    public class League : BaseEntity<Guid>, IAggregateRoot
     {
-        public Managers(Guid id)
+        public League(Guid id)
         {
             Id = Guard.Against.Default(id, nameof(id));
         }

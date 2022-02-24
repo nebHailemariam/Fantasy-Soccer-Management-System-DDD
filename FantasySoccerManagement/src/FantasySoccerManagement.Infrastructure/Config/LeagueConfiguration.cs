@@ -4,11 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace FantasySoccerManagement.Infrastructure.Data.Config
 {
-    public class ManagersEntityTypeConfiguration : IEntityTypeConfiguration<Managers>
+    public class LeagueEntityTypeConfiguration : IEntityTypeConfiguration<League>
     {
-        public void Configure(EntityTypeBuilder<Managers> builder)
+        public void Configure(EntityTypeBuilder<League> builder)
         {
-            builder.ToTable("Managers").HasKey(x => x.Id);
+            builder.ToTable("Leagues").HasKey(x => x.Id);
         }
     }
 }
