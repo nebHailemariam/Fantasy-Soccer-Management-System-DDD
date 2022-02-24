@@ -18,7 +18,7 @@ namespace FantasySoccerManagement.Infrastructure
         {
             _isDevelopment = isDevelopment;
 
-            var coreAssembly = Assembly.GetAssembly(typeof(Managers));
+            var coreAssembly = Assembly.GetAssembly(typeof(League));
             _assemblies.Add(coreAssembly);
 
             var infrastructureAssembly = Assembly.GetAssembly(typeof(AppDbContext));
