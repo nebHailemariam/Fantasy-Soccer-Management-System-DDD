@@ -1,0 +1,3 @@
+﻿-- RUN THIS FROM FrontDesk.Api project folder
+dotnet ef migrations add MIGRATIONNAME -c appdbcontext -p ../FantasySoccerManagement.Infrastructure/FantasySoccerManagement.Infrastructure.csproj -s FantasySoccerManagement.API.csproj -o Data/Migrations
+dotnet ef migrations add InitialMigration -c appdbcontext -p ../FantasySoccerManagement.Infrastructure/FantasySoccerManagement.Infrastructure.csproj -s FantasySoccerManagement.API.csproj -o Data/Migrations
