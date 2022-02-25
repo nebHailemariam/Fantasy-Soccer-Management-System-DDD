@@ -24,7 +24,7 @@ namespace Ardalis.GuardClauses
 
         public static void TeamManagerHasNoTeam(this IGuardClause guardClause, TeamManager teamManager, string parameterName)
         {
-            if (teamManager.TeamId == null)
+            if (teamManager.Team == null)
             {
                 throw new ArgumentException("Team manager does not have a team.", parameterName);
             }
@@ -32,7 +32,7 @@ namespace Ardalis.GuardClauses
 
         public static void TeamManagerHasTeam(this IGuardClause guardClause, TeamManager teamManager, string parameterName)
         {
-            if (teamManager.TeamId != null)
+            if (teamManager.Team != null)
             {
                 throw new ArgumentException("Team manager already has a team.", parameterName);
             }
