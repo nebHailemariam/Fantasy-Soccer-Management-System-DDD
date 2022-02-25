@@ -2,10 +2,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FantasySoccerManagement.Infrastructure;
 using FantasySoccerManagement.Infrastructure.Data;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -99,6 +97,9 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+// Add Automapper
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var app = builder.Build();
 

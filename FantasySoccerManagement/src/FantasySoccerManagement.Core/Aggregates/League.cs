@@ -6,17 +6,20 @@ namespace FantasySoccerManagement.Core.Aggregate
 {
     public class League : BaseEntity<Guid>, IAggregateRoot
     {
-        public League(Guid id)
+        public League(Guid id, string name)
         {
             Id = Guard.Against.Default(id, nameof(id));
+            Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
         }
+        public string Name { get; set; }
 
-        public virtual List<TeamManager> TeamManagers { get; set; }
+        public List<TeamManager> TeamManagers { get; set; }
 
         public void AddTeamManager(TeamManager teamManager)
         {
             Guard.Against.Null(teamManager, nameof(teamManager));
             Guard.Against.DuplicateTeamManager(TeamManagers, teamManager, nameof(teamManager));
+            teamManager.Id = Guid.Empty;
             TeamManagers.Add(teamManager);
         }
 
@@ -29,8 +32,8 @@ namespace FantasySoccerManagement.Core.Aggregate
             Guard.Against.TeamManagerHasNoTeam(previousTeamManager, nameof(previousTeamManager));
             Guard.Against.TeamManagerHasTeam(newTeamManager, nameof(newTeamManager));
 
-            newTeamManager.TeamId = previousTeamManager.Id;
-            newTeamManager.Team = newTeamManager.Team;
+            // newTeamManager.Team = newTeamManager.Team;
+            // previousTeamManager.Team = null;
         }
 
 

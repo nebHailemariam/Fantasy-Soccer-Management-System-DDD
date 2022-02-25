@@ -28,6 +28,9 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
 
                     b.ToTable("Leagues", (string)null);
@@ -65,6 +68,8 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TeamId");
+
                     b.ToTable("Players", (string)null);
                 });
 
@@ -80,19 +85,22 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("ManagerId")
-                        .HasColumnType("uuid");
-
                     b.Property<double>("Money")
                         .HasColumnType("double precision");
 
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("TeamManagerId")
+                        .HasColumnType("uuid");
+
                     b.Property<double>("TeamValue")
                         .HasColumnType("double precision");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TeamManagerId")
+                        .IsUnique();
 
                     b.ToTable("Teams", (string)null);
                 });
@@ -112,37 +120,56 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("LeagueId")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("TeamId")
+                    b.Property<Guid>("LeagueId")
                         .HasColumnType("uuid");
 
                     b.HasKey("Id");
 
                     b.HasIndex("LeagueId");
 
-                    b.HasIndex("TeamId");
-
                     b.ToTable("TeamManagers", (string)null);
+                });
+
+            modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.Player", b =>
+                {
+                    b.HasOne("FantasySoccerManagement.Core.Aggregate.Team", null)
+                        .WithMany("Players")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.Team", b =>
+                {
+                    b.HasOne("FantasySoccerManagement.Core.Aggregate.TeamManager", null)
+                        .WithOne("Team")
+                        .HasForeignKey("FantasySoccerManagement.Core.Aggregate.Team", "TeamManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.TeamManager", b =>
                 {
                     b.HasOne("FantasySoccerManagement.Core.Aggregate.League", null)
                         .WithMany("TeamManagers")
-                        .HasForeignKey("LeagueId");
-
-                    b.HasOne("FantasySoccerManagement.Core.Aggregate.Team", "Team")
-                        .WithMany()
-                        .HasForeignKey("TeamId");
-
-                    b.Navigation("Team");
+                        .HasForeignKey("LeagueId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.League", b =>
                 {
                     b.Navigation("TeamManagers");
+                });
+
+            modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.Team", b =>
+                {
+                    b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("FantasySoccerManagement.Core.Aggregate.TeamManager", b =>
+                {
+                    b.Navigation("Team");
                 });
 #pragma warning restore 612, 618
         }

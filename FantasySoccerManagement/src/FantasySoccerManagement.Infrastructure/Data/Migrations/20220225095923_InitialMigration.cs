@@ -10,14 +10,59 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Managers",
+                name: "Leagues",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false)
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Managers", x => x.Id);
+                    table.PrimaryKey("PK_Leagues", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TeamManagers",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    LeagueId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TeamManagers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_TeamManagers_Leagues_LeagueId",
+                        column: x => x.LeagueId,
+                        principalTable: "Leagues",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Teams",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    Country = table.Column<string>(type: "text", nullable: true),
+                    TeamValue = table.Column<double>(type: "double precision", nullable: false),
+                    Money = table.Column<double>(type: "double precision", nullable: false),
+                    TeamManagerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Teams", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Teams_TeamManagers_TeamManagerId",
+                        column: x => x.TeamManagerId,
+                        principalTable: "TeamManagers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -37,60 +82,29 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Players", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Teams",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: true),
-                    Country = table.Column<string>(type: "text", nullable: true),
-                    TeamValue = table.Column<double>(type: "double precision", nullable: false),
-                    Money = table.Column<double>(type: "double precision", nullable: false),
-                    ManagerId = table.Column<Guid>(type: "uuid", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Teams", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "TeamManagers",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    FirstName = table.Column<string>(type: "text", nullable: true),
-                    LastName = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    TeamId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ManagersId = table.Column<Guid>(type: "uuid", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_TeamManagers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_TeamManagers_Managers_ManagersId",
-                        column: x => x.ManagersId,
-                        principalTable: "Managers",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_TeamManagers_Teams_TeamId",
+                        name: "FK_Players_Teams_TeamId",
                         column: x => x.TeamId,
                         principalTable: "Teams",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamManagers_ManagersId",
-                table: "TeamManagers",
-                column: "ManagersId");
+                name: "IX_Players_TeamId",
+                table: "Players",
+                column: "TeamId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_TeamManagers_TeamId",
+                name: "IX_TeamManagers_LeagueId",
                 table: "TeamManagers",
-                column: "TeamId");
+                column: "LeagueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Teams_TeamManagerId",
+                table: "Teams",
+                column: "TeamManagerId",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -99,13 +113,13 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                 name: "Players");
 
             migrationBuilder.DropTable(
+                name: "Teams");
+
+            migrationBuilder.DropTable(
                 name: "TeamManagers");
 
             migrationBuilder.DropTable(
-                name: "Managers");
-
-            migrationBuilder.DropTable(
-                name: "Teams");
+                name: "Leagues");
         }
     }
 }
