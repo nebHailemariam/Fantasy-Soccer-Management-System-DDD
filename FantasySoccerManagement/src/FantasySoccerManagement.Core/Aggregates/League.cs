@@ -23,17 +23,17 @@ namespace FantasySoccerManagement.Core.Aggregate
             TeamManagers.Add(teamManager);
         }
 
-        public void TransferTeamOwnership(TeamManager previousTeamManager, TeamManager newTeamManager)
+        public void TransferTeamOwnership(TeamManager previousTeamOwner, Team teamToBeTransferred, TeamManager newTeamOwner)
         {
-            Guard.Against.Null(previousTeamManager, nameof(previousTeamManager));
-            Guard.Against.TeamManagerNotFound(TeamManagers, previousTeamManager, nameof(previousTeamManager));
-            Guard.Against.Null(newTeamManager, nameof(newTeamManager));
-            Guard.Against.TeamManagerNotFound(TeamManagers, newTeamManager, nameof(newTeamManager));
-            Guard.Against.TeamManagerHasNoTeam(previousTeamManager, nameof(previousTeamManager));
-            Guard.Against.TeamManagerHasTeam(newTeamManager, nameof(newTeamManager));
+            Guard.Against.Null(previousTeamOwner, nameof(previousTeamOwner));
+            Guard.Against.TeamManagerNotFound(TeamManagers, previousTeamOwner, nameof(previousTeamOwner));
+            Guard.Against.Null(newTeamOwner, nameof(newTeamOwner));
+            Guard.Against.TeamManagerNotFound(TeamManagers, newTeamOwner, nameof(newTeamOwner));
+            Guard.Against.TeamNotFound(previousTeamOwner.Teams, teamToBeTransferred.Id, nameof(teamToBeTransferred.Id));
 
-            // newTeamManager.Team = newTeamManager.Team;
-            // previousTeamManager.Team = null;
+            previousTeamOwner.RemoveTeam(teamToBeTransferred.Id);
+            teamToBeTransferred.TeamManagerId = newTeamOwner.Id;
+            newTeamOwner.AddTeam(teamToBeTransferred);
         }
 
 

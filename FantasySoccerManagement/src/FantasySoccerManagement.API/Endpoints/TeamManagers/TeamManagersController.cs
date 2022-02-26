@@ -24,7 +24,7 @@ namespace FantasySoccerManagement.Api
         [HttpGet("{teamManagerId}")]
         public async Task<IActionResult> Get([FromRoute] Guid teamManagerId)
         {
-            var spec = new TeamManagerGetByIdWithPalyersSpec(teamManagerId);
+            var spec = new TeamManagerGetByIdWithTeamsSpec(teamManagerId);
             var response = await _leagueCachedRepository.GetBySpecAsync(spec);
             return Ok(response);
         }
@@ -36,6 +36,7 @@ namespace FantasySoccerManagement.Api
             var response = await _leagueCachedRepository.GetBySpecAsync(spec);
             return Ok(response);
         }
+
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] TeamManagerCreateDto teamManagerCreateDto)
         {
