@@ -1,6 +1,5 @@
 using Ardalis.GuardClauses;
 using FantasySoccerManagementSystem.SharedKernel;
-using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 
 namespace FantasySoccerManagement.Core.Aggregate
 {
@@ -18,15 +17,22 @@ namespace FantasySoccerManagement.Core.Aggregate
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public DateTime CreatedAt { get; set; }
-        public Team Team { get; set; }
+        public List<Team> Teams { get; set; }
         public Guid LeagueId { get; set; }
 
-        public Team AssignTeam(Team team)
+        public void AddTeam(Team team)
         {
             Guard.Against.Null(team, nameof(team));
             Guard.Against.Default(team.Id, nameof(team.Id));
-            Team = team;
-            return team;
+            Guard.Against.DuplicateTeam(Teams, team, nameof(team));
+            team.Id = Guid.Empty;
+            Teams.Add(team);
+        }
+
+        public void RemoveTeam(Guid teamId)
+        {
+            Guard.Against.TeamNotFound(Teams, teamId, nameof(teamId));
+            Teams.Remove(Teams.Single(team => team.Id == teamId));
         }
     }
 }
