@@ -1,18 +1,17 @@
 using Ardalis.GuardClauses;
 using FantasySoccerManagementSystem.SharedKernel;
-using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 
 namespace FantasySoccerManagement.Core.Aggregate
 {
     public class Team : BaseEntity<Guid>
     {
-        public Team(Guid id, string name, string country, double teamValue, double money, Guid teamManagerId)
+        public Team(Guid id, string name, string country, Guid teamManagerId)
         {
             Id = Guard.Against.Default(id, nameof(id));
             Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
             Country = Guard.Against.InvalidCountry(country, nameof(country));
-            TeamValue = Guard.Against.Negative(teamValue, nameof(teamValue));
-            Money = Guard.Against.Zero(money, nameof(money));
+            TeamValue = 0;
+            Money = 5000000;
             TeamManagerId = Guard.Against.Default(teamManagerId, nameof(teamManagerId));
             CreatedAt = DateTime.UtcNow;
         }

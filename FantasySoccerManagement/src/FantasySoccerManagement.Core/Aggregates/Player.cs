@@ -1,7 +1,6 @@
 using Ardalis.GuardClauses;
 using FantasySoccerManagement.Core.Enums;
 using FantasySoccerManagementSystem.SharedKernel;
-using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 
 namespace FantasySoccerManagement.Core.Aggregate
 {
