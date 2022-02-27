@@ -6,13 +6,13 @@ namespace FantasySoccerManagement.Core.Aggregate
 {
     public class Player : BaseEntity<Guid>
     {
-        public Player(Guid id, string firstName, string lastName, string country, double value, Guid teamId)
+        public Player(Guid id, string firstName, string lastName, string country, Guid teamId)
         {
             Id = Guard.Against.Default(id, nameof(id));
             FirstName = Guard.Against.NullOrWhiteSpace(firstName, nameof(firstName));
             LastName = Guard.Against.NullOrWhiteSpace(lastName, nameof(lastName));
             Country = Guard.Against.InvalidCountry(country, nameof(country));
-            Value = Guard.Against.Negative(value, nameof(value));
+            Value = 1000000;
             TeamId = Guard.Against.Default(teamId, nameof(teamId));
             CreatedAt = DateTime.UtcNow;
         }
