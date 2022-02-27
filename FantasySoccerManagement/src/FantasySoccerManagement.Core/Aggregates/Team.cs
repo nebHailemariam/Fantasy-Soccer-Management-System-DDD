@@ -23,5 +23,12 @@ namespace FantasySoccerManagement.Core.Aggregate
         public Guid TeamManagerId { get; set; }
         public DateTime CreatedAt { get; set; }
         public virtual List<Player> Players { get; set; }
+
+        public void AddPlayer(Player player)
+        {
+            Guard.Against.DuplicatePlayer(Players, player, nameof(player));
+            player.Id = Guid.Empty;
+            Players.Add(player);
+        }
     }
 }
