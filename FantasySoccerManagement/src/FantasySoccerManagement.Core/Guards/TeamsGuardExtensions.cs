@@ -11,5 +11,13 @@ namespace Ardalis.GuardClauses
                 throw new ArgumentException("Cannot add duplicate player.", parameterName);
             }
         }
+
+        public static void MaximumTimeSizeExceeded(this IGuardClause guardClause, List<Player> players, string parameterName)
+        {
+            if (players.Count >= 20)
+            {
+                throw new ArgumentException("Cannot add another player. Team size limit cannot exceed 20 players.", parameterName);
+            }
+        }
     }
 }

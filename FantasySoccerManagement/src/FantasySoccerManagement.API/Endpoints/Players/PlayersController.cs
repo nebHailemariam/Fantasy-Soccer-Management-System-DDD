@@ -33,7 +33,8 @@ namespace FantasySoccerManagement.Api
             {
                 return NotFound(new { message = "Team not found" });
             }
-            var newPlayer = new Player(Guid.NewGuid(), playerCreateDto.FirstName, playerCreateDto.LastName, playerCreateDto.Country, playerCreateDto.TeamId);
+            var newPlayer = new Player(Guid.NewGuid(), playerCreateDto.FirstName, playerCreateDto.LastName,
+            playerCreateDto.Country, playerCreateDto.DateOfBirth, playerCreateDto.TeamId);
             existingTeam.AddPlayer(newPlayer);
 
             await _leagueRepository.UpdateAsync(existingLeague);

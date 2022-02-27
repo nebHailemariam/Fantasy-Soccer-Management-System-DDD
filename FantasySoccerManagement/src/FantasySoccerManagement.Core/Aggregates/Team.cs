@@ -26,8 +26,10 @@ namespace FantasySoccerManagement.Core.Aggregate
 
         public void AddPlayer(Player player)
         {
+            Guard.Against.MaximumTimeSizeExceeded(Players, nameof(Players));
             Guard.Against.DuplicatePlayer(Players, player, nameof(player));
             player.Id = Guid.Empty;
+            TeamValue += player.Value;
             Players.Add(player);
         }
     }
