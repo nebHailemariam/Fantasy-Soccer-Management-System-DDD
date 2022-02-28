@@ -20,6 +20,7 @@ namespace FantasySoccerManagement.Infrastructure.Data
         public DbSet<Player> Players { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<TeamManager> TeamManagers { get; set; }
+        public DbSet<Transfer> Transfers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

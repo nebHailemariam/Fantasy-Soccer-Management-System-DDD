@@ -12,8 +12,8 @@ namespace FantasySoccerManagement.Core.Aggregate
             Name = Guard.Against.NullOrWhiteSpace(name, nameof(name));
         }
         public string Name { get; set; }
-
         public List<TeamManager> TeamManagers { get; set; }
+        public List<Transfer> Transfers { get; set; }
 
         public void AddTeamManager(TeamManager teamManager)
         {
@@ -36,7 +36,6 @@ namespace FantasySoccerManagement.Core.Aggregate
             newTeamOwner.AddTeam(teamToBeTransferred);
         }
 
-
         public void DeleteTeamManager(TeamManager teamManager)
         {
             Guard.Against.Null(teamManager, nameof(teamManager));
@@ -48,6 +47,28 @@ namespace FantasySoccerManagement.Core.Aggregate
             {
                 TeamManagers.Remove(teamManagerToDelete);
             }
+        }
+
+        public void ListPlayerOnMarkatPlace(Transfer transfer)
+        {
+            Guard.Against.DuplicatePlayerTransfer(Transfers, transfer.PlayerId, nameof(transfer.PlayerId));
+            transfer.Id = Guid.Empty;
+            Transfers.Add(transfer);
+        }
+
+        public void BuyPlayer(Guid playerSellerTeamId, Guid playerBuyerTeamId, Guid playerId, Guid transferId, double askingPrice)
+        {
+            Guard.Against.IdenticalPlayerBuyerAndSellerTeam(playerSellerTeamId, playerBuyerTeamId, nameof(playerSellerTeamId));
+            var player = TeamManagers.Where(teamManager => teamManager.Teams.Where(team => team.Players.Where(player => player.Id == playerId).Any()).Any()).FirstOrDefault().Teams.FirstOrDefault().Players.Find(p => p.Id == playerId);
+
+            var sellerPlayerTeam = TeamManagers.Where(teamManager => teamManager.Teams.Where(team => team.Id == playerSellerTeamId).Any()).FirstOrDefault().Teams.FirstOrDefault();
+            sellerPlayerTeam.SellPlayer(player, askingPrice);
+
+            var BuyerPlayerTeam = TeamManagers.Where(teamManager => teamManager.Teams.Where(team => team.Id == playerBuyerTeamId).Any()).FirstOrDefault().Teams.FirstOrDefault();
+            BuyerPlayerTeam.BuyPlayer(player, askingPrice);
+
+            var transfer = Transfers.Find(t => t.Id == transferId);
+            transfer.BuyPlayer(BuyerPlayerTeam.TeamManagerId);
         }
     }
 }
