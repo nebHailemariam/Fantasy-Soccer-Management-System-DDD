@@ -24,6 +24,7 @@ namespace FantasySoccerManagement.Core.Aggregate
         public DateTime CreatedAt { get; set; }
         public virtual List<Player> Players { get; set; }
 
+
         public void AddPlayer(Player player)
         {
             Guard.Against.MaximumTimeSizeExceeded(Players, nameof(Players));
@@ -31,6 +32,26 @@ namespace FantasySoccerManagement.Core.Aggregate
             player.Id = Guid.Empty;
             TeamValue += player.Value;
             Players.Add(player);
+        }
+
+        public void SellPlayer(Player playerToRemove, double askingPrice)
+        {
+            Guard.Against.PlayerNotFound(Players, playerToRemove.Id, nameof(playerToRemove));
+            TeamValue -= playerToRemove.Value;
+            Money += askingPrice;
+            Players.Remove(playerToRemove);
+        }
+
+        public void BuyPlayer(Player playerToAdd, double askingPrice)
+        {
+            Guard.Against.MaximumTimeSizeExceeded(Players, nameof(Players));
+            Guard.Against.DuplicatePlayer(Players, playerToAdd, nameof(playerToAdd));
+            playerToAdd.Value += +(playerToAdd.Value * (new Random().Next(10, 101) / 100.0));
+            TeamValue += playerToAdd.Value;
+            Guard.Against.Negative(Money - askingPrice, nameof(Money));
+            Money -= askingPrice;
+            playerToAdd.TeamId = Id;
+            Players.Add(playerToAdd);
         }
     }
 }
