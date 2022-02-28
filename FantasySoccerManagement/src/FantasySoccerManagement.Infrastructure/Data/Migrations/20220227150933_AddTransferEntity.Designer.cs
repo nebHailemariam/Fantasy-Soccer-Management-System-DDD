@@ -3,6 +3,7 @@ using System;
 using FantasySoccerManagement.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace FantasySoccerManagement.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220227150933_AddTransferEntity")]
+    partial class AddTransferEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -138,13 +140,13 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                     b.Property<double>("AskingPrice")
                         .HasColumnType("double precision");
 
-                    b.Property<Guid?>("BuyerId")
+                    b.Property<Guid>("BuyerId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("LeagueId")
+                    b.Property<Guid?>("LeagueId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("PlayerId")
@@ -200,13 +202,13 @@ namespace FantasySoccerManagement.Infrastructure.Data.Migrations
                 {
                     b.HasOne("FantasySoccerManagement.Core.Aggregate.TeamManager", "Buyer")
                         .WithMany()
-                        .HasForeignKey("BuyerId");
+                        .HasForeignKey("BuyerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("FantasySoccerManagement.Core.Aggregate.League", null)
                         .WithMany("Transfers")
-                        .HasForeignKey("LeagueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LeagueId");
 
                     b.HasOne("FantasySoccerManagement.Core.Aggregate.Player", "Player")
                         .WithMany()
