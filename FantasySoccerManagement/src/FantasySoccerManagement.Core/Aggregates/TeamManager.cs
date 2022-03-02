@@ -5,12 +5,13 @@ namespace FantasySoccerManagement.Core.Aggregate
 {
     public class TeamManager : BaseEntity<Guid>
     {
-        public TeamManager(Guid id, string firstName, string lastName, Guid leagueId)
+        public TeamManager(Guid id, string firstName, string lastName, Guid leagueId, Guid createdBy)
         {
             Id = Guard.Against.Default(id, nameof(id));
             FirstName = Guard.Against.NullOrWhiteSpace(firstName, nameof(firstName));
             LastName = Guard.Against.NullOrWhiteSpace(lastName, nameof(lastName));
             LeagueId = Guard.Against.Default(leagueId, nameof(leagueId));
+            CreatedBy = Guard.Against.Default(createdBy, nameof(createdBy));
             CreatedAt = DateTime.UtcNow;
         }
 
@@ -19,6 +20,7 @@ namespace FantasySoccerManagement.Core.Aggregate
         public DateTime CreatedAt { get; set; }
         public List<Team> Teams { get; set; }
         public Guid LeagueId { get; set; }
+        public Guid CreatedBy { get; set; }
 
         public void AddTeam(Team team)
         {
