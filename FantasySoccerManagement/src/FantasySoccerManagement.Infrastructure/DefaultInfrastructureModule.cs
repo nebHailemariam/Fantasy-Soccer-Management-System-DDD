@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Reflection;
 using Autofac;
 using FantasySoccerManagement.Infrastructure.Data;
@@ -6,6 +5,8 @@ using MediatR;
 using Module = Autofac.Module;
 using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
+using FantasySoccerManagement.Infrastructure.Entity;
+using FantasySoccerManagement.Infrastructure.Interfaces;
 
 namespace FantasySoccerManagement.Infrastructure
 {
@@ -60,6 +61,15 @@ namespace FantasySoccerManagement.Infrastructure
             builder.RegisterType<Mediator>()
                 .As<IMediator>()
                 .InstancePerLifetimeScope();
+
+            builder.RegisterType<UserRepository>()
+                .As<IIdentityRepository<ApplicationUser>>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<UserService>()
+                .As<IIdentityService<ApplicationUser>>()
+                .InstancePerLifetimeScope();
+
 
             var mediatrOpenTypes = new[]
             {
