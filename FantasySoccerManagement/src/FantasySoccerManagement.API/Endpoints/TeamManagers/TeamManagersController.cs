@@ -2,9 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
 using FantasySoccerManagement.Api.Dtos;
-using AutoMapper;
 using FantasySoccerManagement.Core.AggregateSpecifications;
-using System.Text.Json;
+using FantasySoccerManagement.Infrastructure.Entity;
+using FantasySoccerManagement.Infrastructure.Interfaces;
 
 namespace FantasySoccerManagement.Api
 {
@@ -14,11 +14,15 @@ namespace FantasySoccerManagement.Api
     {
         private readonly IRepository<League> _leagueRepository;
         private readonly IReadRepository<League> _leagueCachedRepository;
+        private readonly IIdentityService<ApplicationUser> _userService;
 
-        public TeamManagersController(IReadRepository<League> leagueCachedRepository, IRepository<League> leagueRepository)
+        public TeamManagersController(IReadRepository<League> leagueCachedRepository,
+                                      IRepository<League> leagueRepository,
+                                      IIdentityService<ApplicationUser> userRepository)
         {
             _leagueCachedRepository = leagueCachedRepository;
             _leagueRepository = leagueRepository;
+            _userService = userRepository;
         }
 
         [HttpGet("{teamManagerId}")]
@@ -46,12 +50,18 @@ namespace FantasySoccerManagement.Api
             {
                 return NotFound(new { message = "League not found" });
             }
-            var teamManager = new TeamManager(Guid.NewGuid(), teamManagerCreateDto.FirstName, teamManagerCreateDto.LastName, teamManagerCreateDto.LeagueId);
-
+            var user = new ApplicationUser(teamManagerCreateDto.Email);
+            var teamManager = new TeamManager(Guid.NewGuid(), teamManagerCreateDto.FirstName, teamManagerCreateDto.LastName, teamManagerCreateDto.LeagueId, user.Id);
             existingLeague.AddTeamManager(teamManager);
-            await _leagueRepository.UpdateAsync(existingLeague);
+            await _userService.RegisterAsync(user, teamManagerCreateDto.Password, existingLeague);
 
             return NoContent();
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(UserLoginDto userLoginDto)
+        {
+            return Ok(new { Token = await _userService.LoginAsync(userLoginDto.Email, userLoginDto.Password) });
         }
     }
 }

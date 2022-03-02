@@ -8,7 +8,9 @@
     <PackageReference Include="Ardalis.Specification" Version="6.0.1" />
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Autofac" Version="6.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.16.0" />
   </ItemGroup>
 
   <PropertyGroup>
