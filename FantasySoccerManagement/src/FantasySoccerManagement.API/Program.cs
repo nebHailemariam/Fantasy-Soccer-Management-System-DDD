@@ -2,6 +2,8 @@ using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FantasySoccerManagement.Infrastructure;
 using FantasySoccerManagement.Infrastructure.Data;
+using FantasySoccerManagement.Infrastructure.Entity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json;
@@ -74,6 +76,11 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection"),
             providerOptions => providerOptions.EnableRetryOnFailure(3)));
+
+// Configure ASP.NET Core Identity.
+builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+        .AddEntityFrameworkStores<AppDbContext>()
+        .AddDefaultTokenProviders();
 
 // Enable SignalR
 builder.Services.AddSignalR();
