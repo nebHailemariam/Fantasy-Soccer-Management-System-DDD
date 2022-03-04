@@ -1,8 +1,8 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
 using FantasySoccerManagement.Core.Aggregate;
+using FantasySoccerManagement.Infrastructure.Constants;
 using FantasySoccerManagement.Infrastructure.Entity;
 using FantasySoccerManagement.Infrastructure.Interfaces;
 using FantasySoccerManagementSystem.SharedKernel.Interfaces;
@@ -17,7 +17,6 @@ namespace FantasySoccerManagement.Infrastructure.Data
     public class UserService : IIdentityService<ApplicationUser>
     {
         private readonly IConfiguration _configuration;
-        private readonly AppDbContext _context;
         private readonly IRepository<League> _leagueRepository;
         private readonly IServiceProvider _serviceProvider;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -25,14 +24,12 @@ namespace FantasySoccerManagement.Infrastructure.Data
 
         public UserService(
              IConfiguration configuration,
-            AppDbContext context,
             IRepository<League> leagueRepository,
             IServiceProvider serviceProvider,
             UserManager<ApplicationUser> userManager,
             IIdentityRepository<ApplicationUser> userRepository)
         {
             _configuration = configuration;
-            _context = context;
             _leagueRepository = leagueRepository;
             _serviceProvider = serviceProvider;
             _userManager = userManager;
@@ -48,7 +45,7 @@ namespace FantasySoccerManagement.Infrastructure.Data
             }
 
             var signingCredentials = GetSigningCredentials();
-            var claims = GetClaimsAsync(user);
+            var claims = await GetClaimsAsync(user);
             var tokenOptions = GenerateTokenOptions(signingCredentials, claims);
             var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return token;
@@ -66,12 +63,17 @@ namespace FantasySoccerManagement.Infrastructure.Data
             return tokenOptions;
         }
 
-        public List<Claim> GetClaimsAsync(ApplicationUser user)
+        public async Task<List<Claim>> GetClaimsAsync(ApplicationUser user)
         {
             var claims = new List<Claim>
             {
              new Claim("id", user.Id.ToString()), new Claim(ClaimTypes.Email, user.Email)
             };
+            var roles = await _userRepository.GetRolesAsync(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
             return claims;
         }
 
@@ -83,10 +85,8 @@ namespace FantasySoccerManagement.Infrastructure.Data
             return new SigningCredentials(secret, SecurityAlgorithms.HmacSha256);
         }
 
-
-        public async Task RegisterAsync(ApplicationUser user, string password, League league)
+        public async Task RegisterAsync(ApplicationUser user, string password, League league, string role)
         {
-            Console.WriteLine(JsonSerializer.Serialize(user) + "\n\n\n\n\n\n");
             if (password.Length < 6)
             {
                 throw new Exception("Password length must be greater than 6 characters");
@@ -96,42 +96,56 @@ namespace FantasySoccerManagement.Infrastructure.Data
                 throw new Exception("Email is already registered");
             }
 
-            await CreateAsync(user, password, league);
+            await CreateAsync(user, password, league, role);
         }
 
-
-        public async Task CreateAsync(ApplicationUser user, string password, League league)
+        public async Task RegisterLeaguesManagerAsync(ApplicationUser user, string password)
         {
-            using (var scope = _serviceProvider.CreateScope())
+
+            await RegisterAsync(user, password, null, RoleConstants.LEAGUE_MANAGER_ROLE);
+        }
+
+        public async Task RegisterTeamManagerAsync(ApplicationUser user, string password, League league)
+        {
+
+            await RegisterAsync(user, password, league, RoleConstants.TEAM_MANAGER_ROLE);
+        }
+
+        public async Task CreateAsync(ApplicationUser user, string password, League league, string role)
+        {
+            using var scope = _serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var strategy = context.Database.CreateExecutionStrategy();
+            await strategy.Execute(async () =>
             {
-                var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-                var strategy = context.Database.CreateExecutionStrategy();
-                await strategy.Execute(async () =>
+                using var transaction = context.Database.BeginTransaction();
+                try
                 {
-                    using var transaction = context.Database.BeginTransaction();
-                    try
+                    user.UserName = user.Email;
+                    user.NormalizedUserName = user.Email.ToUpper();
+                    user.NormalizedEmail = user.Email.ToUpper();
+                    // Hash password.
+                    user.SecurityStamp = Guid.NewGuid().ToString();
+                    user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, password);
+
+                    user.CreatedAt = DateTime.UtcNow;
+
+                    var createdUser = await _userRepository.CreateAsync(context, user, password);
+                    await _userRepository.AddRoleAsync(context, createdUser.Id, role);
+                    await context.SaveChangesAsync();
+                    if (league != null)
                     {
-                        user.UserName = user.Email;
-                        user.NormalizedUserName = user.Email.ToUpper();
-                        user.NormalizedEmail = user.Email.ToUpper();
-                        // Hash password.
-                        user.SecurityStamp = Guid.NewGuid().ToString();
-                        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, password);
-
-                        user.CreatedAt = DateTime.UtcNow;
-
-                        await _context.Users.AddAsync(user);
-                        await _context.SaveChangesAsync();
                         await _leagueRepository.UpdateAsync(league);
-                        return user;
                     }
-                    catch (Exception)
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                });
-            }
+                    transaction.Commit();
+                    return user;
+                }
+                catch (Exception)
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            });
         }
     }
 }
