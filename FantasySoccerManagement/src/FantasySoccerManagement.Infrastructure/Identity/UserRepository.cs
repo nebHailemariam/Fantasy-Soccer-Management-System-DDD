@@ -1,23 +1,31 @@
-using System.Text.Json;
-using FantasySoccerManagement.Core.Aggregate;
-using FantasySoccerManagement.Infrastructure.Data;
 using FantasySoccerManagement.Infrastructure.Entity;
 using FantasySoccerManagement.Infrastructure.Interfaces;
-using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace FantasySoccerManagement.Infrastructure.Data
 {
     public class UserRepository : IIdentityRepository<ApplicationUser>
     {
+        private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public UserRepository(
-            UserManager<ApplicationUser> userManager)
+        public UserRepository(AppDbContext context,
+                              UserManager<ApplicationUser> userManager)
         {
+            _context = context;
             _userManager = userManager;
+        }
+
+        public async Task AddRoleAsync(AppDbContext context, Guid userId, string role)
+        {
+            var userRole = new IdentityUserRole<Guid>()
+            {
+                UserId = userId,
+                RoleId = (await GetApplicationRoleByName(role)).Id
+            };
+            await context.UserRoles.AddAsync(userRole);
+            await context.SaveChangesAsync();
         }
 
         public async Task<bool> CheckPasswordAsync(ApplicationUser user, string password)
@@ -48,9 +56,22 @@ namespace FantasySoccerManagement.Infrastructure.Data
             return true;
         }
 
+        public async Task<IdentityRole<Guid>> GetApplicationRoleByName(string roleName)
+        {
+            var role = await _context.Roles.SingleOrDefaultAsync(r => r.Name == roleName);
+            if (role == null)
+            {
+                throw new Exception($"Role {roleName} not found");
+            }
+            return role;
+        }
         public async Task<ApplicationUser> GetByEmailAsync(string email)
         {
             var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                throw new Exception($"User with email {email} not found");
+            }
             return user;
         }
 
@@ -58,6 +79,11 @@ namespace FantasySoccerManagement.Infrastructure.Data
         {
             var user = await _userManager.FindByIdAsync(id);
             return user;
+        }
+
+        public async Task<IList<string>> GetRolesAsync(ApplicationUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
     }
 }
