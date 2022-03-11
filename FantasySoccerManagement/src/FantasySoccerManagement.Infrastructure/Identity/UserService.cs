@@ -17,19 +17,22 @@ namespace FantasySoccerManagement.Infrastructure.Data
     public class UserService : IIdentityService<ApplicationUser>
     {
         private readonly IConfiguration _configuration;
+        private readonly AppDbContext _context;
         private readonly IRepository<League> _leagueRepository;
         private readonly IServiceProvider _serviceProvider;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IIdentityRepository<ApplicationUser> _userRepository;
 
         public UserService(
-             IConfiguration configuration,
+            IConfiguration configuration,
+            AppDbContext context,
             IRepository<League> leagueRepository,
             IServiceProvider serviceProvider,
             UserManager<ApplicationUser> userManager,
             IIdentityRepository<ApplicationUser> userRepository)
         {
             _configuration = configuration;
+            _context = context;
             _leagueRepository = leagueRepository;
             _serviceProvider = serviceProvider;
             _userManager = userManager;
@@ -114,11 +117,10 @@ namespace FantasySoccerManagement.Infrastructure.Data
         public async Task CreateAsync(ApplicationUser user, string password, League league, string role)
         {
             using var scope = _serviceProvider.CreateScope();
-            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var strategy = context.Database.CreateExecutionStrategy();
+            var strategy = _context.Database.CreateExecutionStrategy();
             await strategy.Execute(async () =>
             {
-                using var transaction = context.Database.BeginTransaction();
+                using var transaction = _context.Database.BeginTransaction();
                 try
                 {
                     user.UserName = user.Email;
@@ -130,9 +132,9 @@ namespace FantasySoccerManagement.Infrastructure.Data
 
                     user.CreatedAt = DateTime.UtcNow;
 
-                    var createdUser = await _userRepository.CreateAsync(context, user, password);
-                    await _userRepository.AddRoleAsync(context, createdUser.Id, role);
-                    await context.SaveChangesAsync();
+                    var createdUser = await _userRepository.CreateAsync(_context, user, password);
+                    await _userRepository.AddRoleAsync(_context, createdUser.Id, role);
+                    await _context.SaveChangesAsync();
                     if (league != null)
                     {
                         await _leagueRepository.UpdateAsync(league);

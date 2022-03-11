@@ -15,9 +15,8 @@ namespace FantasySoccerManagement.Api
         private readonly IRepository<League> _leagueRepository;
         private readonly IIdentityService<ApplicationUser> _userService;
 
-        public UsersController(IReadRepository<League> leagueCachedRepository,
-                                      IRepository<League> leagueRepository,
-                                      IIdentityService<ApplicationUser> userRepository)
+        public UsersController(IRepository<League> leagueRepository,
+                               IIdentityService<ApplicationUser> userRepository)
         {
             _leagueRepository = leagueRepository;
             _userService = userRepository;
