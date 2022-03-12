@@ -5,6 +5,6 @@ namespace FantasySoccerManagementSystem.SharedKernel
     public abstract class BaseEntity<TId>
     {
         public TId Id { get; set; }
-        public List<BaseDomainEvent> Events;
+        public List<BaseDomainEvent> Events = new();
     }
 }

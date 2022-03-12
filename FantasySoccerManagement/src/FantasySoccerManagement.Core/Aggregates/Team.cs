@@ -1,4 +1,5 @@
 using Ardalis.GuardClauses;
+using FantasySoccerManagement.Core.DomainEvents;
 using FantasySoccerManagementSystem.SharedKernel;
 
 namespace FantasySoccerManagement.Core.Aggregate
@@ -32,6 +33,7 @@ namespace FantasySoccerManagement.Core.Aggregate
             player.Id = Guid.Empty;
             TeamValue += player.Value;
             Players.Add(player);
+            Events.Add(new PlayerAddedEvent(player));
         }
 
         public void SellPlayer(Player playerToRemove, double askingPrice)
