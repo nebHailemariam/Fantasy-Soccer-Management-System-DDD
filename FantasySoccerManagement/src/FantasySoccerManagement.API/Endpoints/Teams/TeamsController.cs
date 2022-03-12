@@ -3,6 +3,8 @@ using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
 using FantasySoccerManagement.Api.Dtos;
 using FantasySoccerManagement.Core.AggregateSpecifications;
+using Microsoft.AspNetCore.Authorization;
+using FantasySoccerManagement.Infrastructure.Constants;
 
 namespace FantasySoccerManagement.Api
 {
@@ -19,8 +21,8 @@ namespace FantasySoccerManagement.Api
             _leagueRepository = leagueRepository;
         }
 
-
         [HttpPost]
+        [Authorize(Policy = PolicyConstants.IS_TEAM_MANAGER)]
         public async Task<IActionResult> Create([FromBody] TeamCreateDto teamCreateDto)
         {
             var spec = new TeamManagerGetByIdWithTeamsSpec(teamCreateDto.TeamManagerId);
