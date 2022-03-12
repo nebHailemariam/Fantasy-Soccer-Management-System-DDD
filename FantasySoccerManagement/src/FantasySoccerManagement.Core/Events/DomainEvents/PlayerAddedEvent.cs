@@ -7,9 +7,9 @@ namespace FantasySoccerManagement.Core.DomainEvents
     {
         public PlayerAddedEvent(Player player)
         {
-            Player = player;
+            PlayerAdded = player;
         }
-        public Player Player { get; set; }
+        public Player PlayerAdded { get; set; }
     }
 
 }
