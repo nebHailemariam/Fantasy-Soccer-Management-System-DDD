@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using RabbitMQ.Client;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -107,6 +108,15 @@ builder.Services.AddAuthentication(opt =>
     };
 });
 
+// Configure RabbitMQ
+builder.Services.AddSingleton(serviceProvider =>
+{
+    var uri = new Uri("amqp://guest:guest@rabbit:5672/CUSTOM_HOST");
+    return new ConnectionFactory
+    {
+        Uri = uri
+    };
+});
 
 // Enable SignalR
 builder.Services.AddSignalR();
