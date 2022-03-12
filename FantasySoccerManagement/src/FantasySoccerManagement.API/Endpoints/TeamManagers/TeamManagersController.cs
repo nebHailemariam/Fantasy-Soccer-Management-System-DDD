@@ -1,14 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
-using FantasySoccerManagement.Api.Dtos;
 using FantasySoccerManagement.Core.AggregateSpecifications;
-using FantasySoccerManagement.Infrastructure.Entity;
-using FantasySoccerManagement.Infrastructure.Interfaces;
+using Microsoft.AspNetCore.Authorization;
+using FantasySoccerManagement.Infrastructure.Constants;
 
 namespace FantasySoccerManagement.Api
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class TeamManagersController : ControllerBase
     {

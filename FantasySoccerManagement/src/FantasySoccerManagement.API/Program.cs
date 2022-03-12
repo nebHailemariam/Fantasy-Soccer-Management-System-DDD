@@ -1,11 +1,15 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
 using FantasySoccerManagement.Infrastructure;
+using FantasySoccerManagement.Infrastructure.Constants;
 using FantasySoccerManagement.Infrastructure.Data;
 using FantasySoccerManagement.Infrastructure.Entity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -82,6 +86,28 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
+// Configure JWT settings.
+var jwtSettings = builder.Configuration.GetSection("JWTSettings");
+
+builder.Services.AddAuthentication(opt =>
+{
+    opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = false,
+        ValidateAudience = false,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings.GetSection("validIssuer").Value,
+        ValidAudience = jwtSettings.GetSection("validAudience").Value,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.GetSection("securityKey").Value))
+    };
+});
+
+
 // Enable SignalR
 builder.Services.AddSignalR();
 
@@ -107,6 +133,13 @@ builder.Services.AddCors(options =>
 
 // Add Automapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+// Configure policies.
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(PolicyConstants.IS_LEAGUE_MANAGER, policy => policy.RequireRole(RoleConstants.LEAGUE_MANAGER_ROLE));
+    options.AddPolicy(PolicyConstants.IS_TEAM_MANAGER, policy => policy.RequireRole(RoleConstants.TEAM_MANAGER_ROLE));
+});
 
 var app = builder.Build();
 

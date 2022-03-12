@@ -2,12 +2,14 @@ using Microsoft.AspNetCore.Mvc;
 using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
 using FantasySoccerManagement.Api.Dtos;
-using AutoMapper;
 using FantasySoccerManagement.Core.AggregateSpecifications;
+using Microsoft.AspNetCore.Authorization;
+using FantasySoccerManagement.Infrastructure.Constants;
 
 namespace FantasySoccerManagement.Api
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class PlayersController : ControllerBase
     {
@@ -19,6 +21,7 @@ namespace FantasySoccerManagement.Api
         }
 
         [HttpPost]
+        [Authorize(Policy = PolicyConstants.IS_TEAM_MANAGER)]
         public async Task<IActionResult> Create([FromBody] PlayerCreateDto playerCreateDto)
         {
             var spec = new TeamGetByIdWithTeamsSpec(playerCreateDto.TeamId);

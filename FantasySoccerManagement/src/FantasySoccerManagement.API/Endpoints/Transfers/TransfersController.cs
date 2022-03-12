@@ -3,10 +3,13 @@ using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
 using FantasySoccerManagement.Api.Dtos;
 using FantasySoccerManagement.Core.AggregateSpecifications;
+using Microsoft.AspNetCore.Authorization;
+using FantasySoccerManagement.Infrastructure.Constants;
 
 namespace FantasySoccerManagement.Api
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public class TransfersController : ControllerBase
     {
@@ -28,6 +31,7 @@ namespace FantasySoccerManagement.Api
         }
 
         [HttpPost]
+        [Authorize(Policy = PolicyConstants.IS_TEAM_MANAGER)]
         public async Task<IActionResult> Create([FromBody] TransferCreateDto transferCreateDto)
         {
             var spec = new PlayerGetByIdWithTransfersSpec(transferCreateDto.PlayerId);
@@ -46,6 +50,7 @@ namespace FantasySoccerManagement.Api
         }
 
         [HttpPost("buy")]
+        [Authorize(Policy = PolicyConstants.IS_TEAM_MANAGER)]
         public async Task<IActionResult> Create([FromBody] TransferBuyDto transferBuyDto)
         {
             var spec = new TransferGetByIdSpec(transferBuyDto.TransferId);
