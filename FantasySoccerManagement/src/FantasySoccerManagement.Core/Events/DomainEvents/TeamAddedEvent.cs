@@ -3,12 +3,12 @@ using FantasySoccerManagementSystem.SharedKernel;
 
 namespace FantasySoccerManagement.Core.DomainEvents
 {
-    public class PlayerAddedEvent : BaseDomainEvent
+    public class TeamAddedEvent : BaseDomainEvent
     {
-        public PlayerAddedEvent(Player player)
+        public TeamAddedEvent(Team team)
         {
-            PlayerAdded = player;
+            TeamAdded = team;
         }
-        public Player PlayerAdded { get; set; }
+        public Team TeamAdded { get; set; }
     }
 }
