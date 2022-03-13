@@ -7,6 +7,9 @@ using FantasySoccerManagementSystem.SharedKernel.Interfaces;
 using FantasySoccerManagement.Core.Aggregate;
 using FantasySoccerManagement.Infrastructure.Entity;
 using FantasySoccerManagement.Infrastructure.Interfaces;
+using FantasySoccerManagement.Core.Interfaces;
+using FantasySoccerManagement.Infrastructure.Messaging;
+using FantasySoccerManagement.Core.DomainEvents;
 
 namespace FantasySoccerManagement.Infrastructure
 {
@@ -70,6 +73,13 @@ namespace FantasySoccerManagement.Infrastructure
                 .As<IIdentityService<ApplicationUser>>()
                 .InstancePerLifetimeScope();
 
+            builder.RegisterType<PlayerAddedEventPublisher>()
+                .As<IMessagePublisher<PlayerAddedEvent>>()
+                .InstancePerLifetimeScope();
+
+            builder.RegisterType<TeamAddedEventPublisher>()
+                .As<IMessagePublisher<TeamAddedEvent>>()
+                .InstancePerLifetimeScope();
 
             var mediatrOpenTypes = new[]
             {
