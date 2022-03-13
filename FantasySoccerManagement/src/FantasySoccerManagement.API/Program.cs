@@ -111,10 +111,11 @@ builder.Services.AddAuthentication(opt =>
 // Configure RabbitMQ
 builder.Services.AddSingleton(serviceProvider =>
 {
-    var uri = new Uri("amqp://guest:guest@rabbit:5672/CUSTOM_HOST");
+    var uri = new Uri("amqp://guest:guest@localhost:5672/");
     return new ConnectionFactory
     {
-        Uri = uri
+        Uri = uri,
+        DispatchConsumersAsync = true
     };
 });
 
