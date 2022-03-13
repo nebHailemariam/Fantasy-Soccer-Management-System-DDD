@@ -11,5 +11,4 @@ namespace FantasySoccerManagement.Core.DomainEvents
         }
         public Player PlayerAdded { get; set; }
     }
-
 }
