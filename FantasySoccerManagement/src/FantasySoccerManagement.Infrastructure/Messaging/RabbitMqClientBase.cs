@@ -7,19 +7,16 @@ namespace FantasySoccerManagement.Infrastructure.Messaging
 {
     public abstract class RabbitMqClientBase : IDisposable
     {
-        protected const string VirtualHost = "CUSTOM_HOST";
-        protected readonly string LoggerExchange = $"{VirtualHost}.LoggerExchange";
-        protected readonly string LoggerQueue = $"{VirtualHost}.log.message";
-        protected const string LoggerQueueAndExchangeRoutingKey = "log.message";
-
+        protected virtual string Exchange { get; set; }
+        protected virtual string Queue { get; set; }
+        protected virtual string QueueAndExchangeRoutingKey { get; set; }
         protected IModel Channel { get; private set; }
         private IConnection _connection;
         private readonly ConnectionFactory _connectionFactory;
         private readonly ILogger<RabbitMqClientBase> _logger;
 
-        protected RabbitMqClientBase(
-            ConnectionFactory connectionFactory,
-            ILogger<RabbitMqClientBase> logger)
+        protected RabbitMqClientBase(ConnectionFactory connectionFactory,
+                                     ILogger<RabbitMqClientBase> logger)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
@@ -36,22 +33,9 @@ namespace FantasySoccerManagement.Infrastructure.Messaging
             if (Channel == null || Channel.IsOpen == false)
             {
                 Channel = _connection.CreateModel();
-                Channel.ExchangeDeclare(
-                    exchange: LoggerExchange,
-                    type: "direct",
-                    durable: true,
-                    autoDelete: false);
-
-                Channel.QueueDeclare(
-                    queue: LoggerQueue,
-                    durable: false,
-                    exclusive: false,
-                    autoDelete: false);
-
-                Channel.QueueBind(
-                    queue: LoggerQueue,
-                    exchange: LoggerExchange,
-                    routingKey: LoggerQueueAndExchangeRoutingKey);
+                Channel.ExchangeDeclare(exchange: Exchange, type: "direct", durable: true, autoDelete: false);
+                Channel.QueueDeclare(queue: Queue, durable: false, exclusive: false, autoDelete: false);
+                Channel.QueueBind(queue: Queue, exchange: Exchange, routingKey: QueueAndExchangeRoutingKey);
             }
         }
 
