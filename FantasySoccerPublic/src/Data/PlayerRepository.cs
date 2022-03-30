@@ -15,5 +15,12 @@ namespace FantasySoccerPublic.Data
         {
             return await _context.Players.ToListAsync();
         }
+
+        public async Task<Player> CreateAsync(Player newPlayer)
+        {
+            await _context.Players.AddAsync(newPlayer);
+            await _context.SaveChangesAsync();
+            return newPlayer;
+        }
     }
 }
