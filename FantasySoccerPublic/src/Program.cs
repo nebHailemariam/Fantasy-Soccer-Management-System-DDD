@@ -1,5 +1,9 @@
+using System.Reflection;
+using FantasySoccerPublic.Commands;
 using FantasySoccerPublic.Data;
+using FantasySoccerPublic.Handlers;
 using FantasySoccerPublic.Services;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using RabbitMQ.Client;
 
@@ -23,6 +27,9 @@ builder.Services.AddSingleton(serviceProvider =>
     };
 });
 
+// Configure MediatR
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+
 // Configure database connection.
 builder.Services.AddDbContext<AppDbContext>(options =>
            options.UseNpgsql(builder.Configuration.GetConnectionString("DBConnection"),
@@ -30,10 +37,14 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 // Add repositories to Dependency injection container
 builder.Services.AddScoped<IPlayerRepository, PlayerRepository>();
+builder.Services.AddScoped<ITeamRepository, TeamRepository>();
 
 // Add services to Dependency injection container.
 builder.Services.AddScoped<IPlayerService, PlayerService>();
 
+// Add hosted Services
+builder.Services.AddHostedService<PlayerAddedEventListener>();
+builder.Services.AddHostedService<TeamAddedEventListener>();
 
 var app = builder.Build();
 
