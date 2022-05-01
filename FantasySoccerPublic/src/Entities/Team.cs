@@ -1,4 +1,3 @@
-using Ardalis.GuardClauses;
 using FantasySoccerManagementSystem.SharedKernel;
 
 namespace FantasySoccerPublic.Entities
