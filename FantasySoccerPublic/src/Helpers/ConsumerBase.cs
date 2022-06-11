@@ -1,10 +1,7 @@
-﻿using System;
-using System.Text;
+﻿using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using FantasySoccerPublic.Helpers.Messaging;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 
