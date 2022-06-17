@@ -1,5 +1,4 @@
 using System.Reflection;
-using FantasySoccerPublic.Commands;
 using FantasySoccerPublic.Data;
 using FantasySoccerPublic.Handlers;
 using FantasySoccerPublic.Services;
